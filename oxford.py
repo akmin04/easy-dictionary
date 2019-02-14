@@ -1,31 +1,45 @@
 import requests
 import json
+import os
 
-print("This app uses Oxford Dictionaries API to get definitions.\nIn order to use this app, you will need an Oxford Dictionaries developer account\n\nYou can get one for free at:\nhttps://developer.oxforddictionaries.com\n\nOnce logged in, go to `API CREDENTIALS`, then find your Application ID and Application Key.\n\nEnter your")
+filePath = os.path.expanduser("~/.oxford_info")
 
-while True:
-    app_id = input("App ID: ")
-    app_key = input("App key: ")
+if os.path.isfile(filePath):
+    file = open(filePath, "r")
+    json = json.load(file)
+    app_id = json['id']
+    app_key = json['key']
+    print("Valid ID/key read from file.\n")
+else:
+    print("This app uses Oxford Dictionaries API to get definitions.\nIn order to use this app, you will need an Oxford Dictionaries developer account\n\nYou can get one for free at:\nhttps://developer.oxforddictionaries.com\n\nOnce logged in, go to `API CREDENTIALS`, then find your Application ID and Application Key.\n\nEnter your")
 
-    url = 'https://od-api.oxforddictionaries.com:443/api/v1/'
-    r = requests.get(url, headers = {'app_id': app_id, 'app_key': app_key})
+    while True:
+        app_id = input("App ID: ")
+        app_key = input("App key: ")
 
-    if r.status_code == 403:
-        print("Not a valid App ID and/or key, try again.")
-    else:
-        break;
+        url = 'https://od-api.oxforddictionaries.com:443/api/v1/'
+        r = requests.get(url, headers = {'app_id': app_id, 'app_key': app_key})
+
+        if r.status_code == 403:
+            print("Not a valid App ID and/or key, try again.")
+        else:
+            break
+
+    file = open(filePath, "w+")
+    file.write("{\n\t\"id\": \"" + app_id + "\",\n\t\"key\": \"" + app_key + "\"\n}")
+    file.close()
+    print("\nValid ID/key. The ID and key has been stored in `~/.oxford_info`\n")
 
 output = ""
 errorOutput = []
 words = []
 
-
-print("\nValid ID/key.\n\nEnter words, enter \'quit\' when finished")
+print("Enter words, enter \'!d\' when finished")
 
 while True:
     word_id = input()
 
-    if word_id == "quit":
+    if word_id == "!d":
         break
 
     words.append(word_id.lower())
@@ -46,6 +60,8 @@ for word in words:
     output += (word + "," + parsed + "\n")
 
 print(output)
-print("No entries were found for the word(s): ")
+
+if len(errorOutput) != 0:
+    print("No entries were found for the word(s): ")
 for word in errorOutput:
     print(word)
