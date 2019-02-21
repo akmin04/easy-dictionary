@@ -1,6 +1,7 @@
 import requests
 import json
 import os
+import re
 
 filePath = os.path.expanduser("~/.oxford_info")
 
@@ -33,6 +34,7 @@ else:
 output = ""
 errorOutput = []
 words = []
+regex = re.compile('[^a-zA-Z]')
 
 print("Enter words, enter \'!d\' when finished")
 
@@ -42,7 +44,7 @@ while True:
     if word_id == "!d":
         break
 
-    words.append(word_id.lower())
+    words.append(regex.sub('', word_id.lower()))
 
 print("\nLoading...\n")
 
