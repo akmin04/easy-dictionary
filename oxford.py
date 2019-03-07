@@ -4,6 +4,10 @@ import os
 import re
 
 filePath = os.path.expanduser("~/.oxford_info")
+output = ""
+errorOutput = []
+words = []
+regex = re.compile('[^a-zA-Z]')
 
 if os.path.isfile(filePath):
     file = open(filePath, "r")
@@ -30,11 +34,6 @@ else:
     file.write("{\n\t\"id\": \"" + app_id + "\",\n\t\"key\": \"" + app_key + "\"\n}")
     file.close()
     print("\nValid ID/key. The ID and key has been stored in `~/.oxford_info`\n")
-
-output = ""
-errorOutput = []
-words = []
-regex = re.compile('[^a-zA-Z]')
 
 print("Enter words, enter \'!d\' when finished")
 
